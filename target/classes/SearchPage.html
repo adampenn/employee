@@ -1,0 +1,173 @@
+<script>
+	var baseUrl = "http://192.168.1.66:7001/employee-V1";
+	var commonForm = '<tr><td><label>First Name</label></td><td><input type="text" id="firstname" name="firstname"></td></tr>';
+	commonForm = commonForm
+			+ '<tr><td><label>Last Name</label></td><td><input type="text" id="lastname" name="lastname"></td></tr>';
+	commonForm = commonForm
+			+ '<tr><td><label>Start Date</label></td><td><input type="date" id="startdate" name="startdate"></td></tr>';
+	commonForm = commonForm
+			+ '<tr><td><label>End Date</label></td><td><input type="date" id="enddate" name="enddate"></td></tr>';
+
+	function pageOnLoad() {
+		var formText = '<form>';
+		formText = formText + '<table class="data" align="center">';
+		formText = formText + commonForm;
+		formText = formText
+				+ '<tr><td><button class="button" type="button" onclick="SearchEmployee()">Search</button></td>';
+		formText = formText
+				+ '<td><button class="button" type="button" onclick="AddPageDisplay()">Add Employee</button></td></tr>';
+		formText = formText + '</table>';
+		formText = formText + '</form>';
+
+		document.getElementById("formArea").innerHTML = formText;
+	}
+
+	function AddPageDisplay() {
+		var formText = '<div class="demo" align="center" id="addResultDisplay"></div><form>';
+		formText = formText + '<table class="data" align="center">';
+		formText = formText + commonForm;
+		formText = formText
+				+ '<tr><td><label>Age</label></td><td><input type="text" id="age" name="age"></td></tr>';
+		formText = formText
+				+ '<tr><td><label>Email</label></td><td><input type="text" id="email" name="email"></td></tr>';
+		formText = formText
+				+ '<tr><td><button class="button" type="button" onclick="pageOnLoad()">Back to Search</button></td>';
+		formText = formText
+				+ '<td><button class="button" type="button" onclick="AddEmployee()">Add Employee</button></td></tr>';
+		formText = formText + '</table>';
+		formText = formText + '</form>';
+		document.getElementById("formArea").innerHTML = formText;
+		document.getElementById("datapopulation").innerHTML = "";
+	}
+
+	function AddEmployee() {
+		var xhttp = new XMLHttpRequest();
+
+		xhttp.onreadystatechange = function() {
+
+			if (this.readyState == 4 && this.status == 200) {
+				//alert(this.responseText);
+				document.getElementById("addResultDisplay").innerHTML = this.responseText;
+			}
+
+			if (this.status == 500) {
+				document.getElementById("addResultDisplay").innerHTML = "Something went wrong. check the fields and try again";
+			}
+		};
+
+		xhttp.open('POST', baseUrl + '/addemployee');
+		xhttp.setRequestHeader('Content-Type', 'application/json');
+		xhttp.setRequestHeader('Accept', 'application/json');
+		xhttp.setRequestHeader('Access-Control-Allow-Origin', '*');
+		xhttp.setRequestHeader('Access-Control-Allow-Headers', '*');
+
+		var sendOption = '{';
+
+		sendOption = sendOption + '"firstname":"'
+				+ document.getElementById("firstname").value + '","lastname":"'
+				+ document.getElementById("lastname").value + '","startdate":"'
+				+ document.getElementById("startdate").value + '","enddate":"'
+				+ document.getElementById("enddate").value + '","age":"'
+				+ document.getElementById("age").value + '","email":"'
+				+ document.getElementById("email").value + '"}';
+
+		console.log(sendOption);
+		xhttp.send(sendOption);
+	}
+
+	function SearchEmployee() {
+		var xhttp = new XMLHttpRequest();
+
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				//alert(this.responseText);
+				var resultObj = JSON.parse(this.responseText);
+
+				var displayBuild = "<h2 align='center'>Search Results</h2>";
+				displayBuild = displayBuild
+						+ "<table align='center' class='data'>";
+
+				displayBuild = displayBuild
+						+ "<th>Id</th><th></th><th>First Name</th><th></th><th>Last Name</th><th></th><th>Age</th><th></th><th>Start Date</th><th></th><th>End Date</th><th></th><th>Email Id</th>";
+				displayBuild = displayBuild + "<tr><td>&nbsp;</td></tr>";
+
+				for (var i = 0; i < resultObj.length; i++) {
+					var obj = resultObj[i];
+					displayBuild = displayBuild + "<tr>";
+					displayBuild = displayBuild + "<td>" + obj.id
+							+ "</td><td></td><td>" + obj.firstname
+							+ "</td><td></td><td>" + obj.lastname
+							+ "</td><td></td><td>" + obj.age
+							+ "</td><td></td><td>" + obj.startdate
+							+ "</td><td></td><td>" + obj.enddate
+							+ "</td><td></td><td>" + obj.email + "</td>";
+					displayBuild = displayBuild + "</tr>";
+				}
+
+				displayBuild = displayBuild + "</table>";
+				document.getElementById("datapopulation").innerHTML = displayBuild;
+			}
+		};
+
+		xhttp.open('POST', baseUrl + '/listemployees');
+		xhttp.setRequestHeader('Content-Type', 'application/json');
+		xhttp.setRequestHeader('Accept', 'application/json');
+		xhttp.setRequestHeader('Access-Control-Allow-Origin', '*');
+		xhttp.setRequestHeader('Access-Control-Allow-Headers', '*');
+
+		var sendOption = '{';
+		sendOption = sendOption + '"firstname":"'
+				+ document.getElementById("firstname").value + '","lastname":"'
+				+ document.getElementById("lastname").value + '","startdate":"'
+				+ document.getElementById("startdate").value + '","enddate":"'
+				+ document.getElementById("enddate").value + '"}';
+
+		console.log(sendOption);
+		xhttp.send(sendOption);
+	}
+</script>
+
+<HTML>
+<head>
+<style>
+.demo {
+	background: #CE5937;
+	background: -moz-linear-gradient(left, #CE5937 0%, #1C6EA4 50%, #C59237 100%);
+	background: -webkit-linear-gradient(left, #CE5937 0%, #1C6EA4 50%, #C59237 100%);
+	background: linear-gradient(to right, #CE5937 0%, #1C6EA4 50%, #C59237 100%);
+}
+
+.data {
+	font-weight: bold;
+	color: #FFFFFF;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.button {
+	background-color: transparent;
+	border: none;
+	color: black;
+	padding: 15px 32px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	font-weight: bold;
+	margin: 4px 2px;
+	cursor: pointer;
+	border: 2px solid #4CAF50;
+}
+</style>
+</head>
+<body onload="pageOnLoad();">
+
+	<div class="demo">
+		<h2 align="center">Employee Search Page</h2>
+	</div>
+
+	<div class="demo" id="formArea"></div>
+	<div class="demo" id="datapopulation"></div>
+</body>
+</html>
+
+
