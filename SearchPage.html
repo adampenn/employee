@@ -71,7 +71,7 @@
 				+ document.getElementById("startdate").value + '","enddate":"'
 				+ document.getElementById("enddate").value + '","age":"'
 				+ document.getElementById("age").value + '","email":"'
-				+ document.getElementById("email").value +  '","telephone":"'
+				+ document.getElementById("email").value + '","telephone":"'
 				+ document.getElementById("telephone").value + '"}';
 
 		console.log(sendOption);
@@ -101,8 +101,8 @@
 							+ "</td><td></td><td>" + obj.firstname
 							+ "</td><td></td><td>" + obj.lastname
 							+ "</td><td></td><td>" + obj.age
-							+ "</td><td></td><td>" + obj.startdate
-							+ "</td><td></td><td>" + obj.enddate
+							+ "</td><td></td><td>" + parseDate(obj.startdate)
+							+ "</td><td></td><td>" + parseDate(obj.enddate)
 							+ "</td><td></td><td>" + obj.email
 							+ "</td><td></td><td>" + obj.telephone + "</td>";
 					displayBuild = displayBuild + "</tr>";
@@ -128,6 +128,16 @@
 
 		console.log(sendOption);
 		xhttp.send(sendOption);
+	}
+
+	function parseDate(dateString) {
+		if (dateString != null && dateString != undefined) {
+			var newDate = new Date(dateString);
+			//var month = newDate.toLocaleString('en-us', { month: "long" });
+			return (newDate.getMonth()+1)+"/"+newDate.getDate()+"/"+newDate.getFullYear();
+		} else {
+			return null;
+		}
 	}
 </script>
 
